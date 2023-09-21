@@ -1,0 +1,20 @@
+---
+title: "SLV Assignment 1"
+author: "Hidde, Ilya, Parisa, & Pim"
+date: '2023-09-21'
+output: html_document
+---
+
+#Assignment 1
+##Libraries
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+##Data
+```{r}
+data <- read.csv("lettuce_dataset.csv")
+```
+
