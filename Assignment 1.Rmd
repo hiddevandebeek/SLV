@@ -5,7 +5,7 @@ date: '2023-09-21'
 output: html_document
 ---
 
-#Assignment 1
+#Assignment 1 (Exploratory Data Analysis)
 ##Libraries
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -18,3 +18,26 @@ library(tidyverse)
 data <- read.csv("lettuce_dataset.csv")
 ```
 
+Data explanation
+... <-- write here
+
+
+##Data wrangling
+```{r}
+# Long to Wide, or vice versa?
+```
+
+
+##Tables
+```{r}
+
+```
+
+##Descriptive and Exploratory plots
+```{r}
+
+```
+
+
+## Explanation
+explain what you did and why (maximum 5 paragraphs total) if applicable, note findings such as missingness, outliers or unlikely values or group differences, etc.
