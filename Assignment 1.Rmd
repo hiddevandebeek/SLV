@@ -5,39 +5,54 @@ date: '2023-09-21'
 output: html_document
 ---
 
-#Assignment 1 (Exploratory Data Analysis)
-##Libraries
-```{r setup, include=FALSE}
+# Assignment 1 (Exploratory Data Analysis)
+
+### Part 0. Libraries
+
+```{r setup, include=FALSE,comment=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(mice)
 ```
 
+### Part 1. Data description 
 
-##Data
 ```{r}
-data <- read.csv("lettuce_dataset.csv")
+data <- read.csv("horror_movies.csv")
 ```
 
-Data explanation
-... <-- write here
+Horror movies dataset allows to explore the evolution of horror movies starting from the 1950s. Originally, data set [was extracted](https://www.kaggle.com/datasets/sujaykapadnis/horror-movies-dataset) from The Movie Database via the tmdb API using R httr. There are ~35K movie records in this dataset. From variables of interest for each horror we know unique id, title, language of origin, release date, popularity, average rating, revenue and status. There are other variables as well, which will not be used in the further analysis.
 
+Dataset contains a lot of missing values, and, in the part 3 we will implement techniques to try to restore needed missing data.
 
-##Data wrangling
+### Part 2. Problem setting
+
+From the following data, the following questions can be investigated:
+
+### Part 3. Data wrangling
+
 ```{r}
 # Long to Wide, or vice versa?
 ```
 
 
-##Tables
+
+### Part 4. Tables
+
 ```{r}
 
 ```
 
-##Descriptive and Exploratory plots
+
+
+### Part 5. Descriptive and Exploratory plots
+
 ```{r}
 
 ```
 
 
-## Explanation
+
+### Explanation
+
 explain what you did and why (maximum 5 paragraphs total) if applicable, note findings such as missingness, outliers or unlikely values or group differences, etc.
