@@ -5,47 +5,98 @@ date: '2023-09-21'
 output: html_document
 ---
 
-# Assignment 1 (Exploratory Data Analysis)
-
-### Part 0. Libraries
+# Exploratory Data Analysis
 
 ```{r setup, include=FALSE,comment=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(magrittr)
+library(psych)
 library(mice)
 ```
 
-### Part 1. Data description 
+### Part 1. Introduction
 
-```{r}
+```{r, include=FALSE}
 data <- read.csv("horror_movies.csv")
 ```
 
-Horror movies dataset allows to explore the evolution of horror movies starting from the 1950s. Originally, data set [was extracted](https://www.kaggle.com/datasets/sujaykapadnis/horror-movies-dataset) from The Movie Database via the tmdb API using R httr. There are ~35K movie records in this dataset. From variables of interest for each horror we know unique id, title, language of origin, release date, popularity, average rating, revenue and status. There are other variables as well, which will not be used in the further analysis.
+Horror movies dataset allows to explore the evolution of horror movies starting from the early 1950s. Originally, data set [was extracted](https://www.kaggle.com/datasets/sujaykapadnis/horror-movies-dataset) from The Movie Database via the tmdb API using R httr. There are 32540 movie records in this dataset. From variables of interest for each horror we know unique id, title, language of origin, release date, popularity, average rating budget, revenue, runtime, status and genres. There are other variables as well such as tagline, which will not be used in the further analysis.
 
-Dataset contains a lot of missing values, and, in the part 3 we will implement techniques to try to restore needed missing data.
+This assignment is structured as follows: In the second part, we will tidy and summarize our data, making it possible to further process it. Dataset contains a lot of missing values, and, in part 2 we will also try to implement techniques to try to restore needed missing data. In part 3, we identify several questions that can be investigated given the data. In part 4, we calculate relevant descriptive statistics to try to answer them. In part 5, we provide graphs, which visualize our conclusions. Each part is accompanied with a discussion explaining what was done and how it helps to find answers for specified questions.
 
-### Part 2. Problem setting
+### Part 2. Data wrangling
 
-From the following data, the following questions can be investigated:
+Original data format:
 
-### Part 3. Data wrangling
+```{r,echo=FALSE}
+head(data)
+```
+
+```{r, include=FALSE}
+str(data)
+```
+
+From the overview, it can be seen that several edits are needed. Firstly, some columns have to be dropped. Secondly, missing data for budget, revenue and runtime columns have to be specified as NA. Thirdly, the format of each column has to be specified more precisely.
+
+```{r, include=FALSE}
+# step 1 & 2.
+
+tidydata <- data %>%
+  select(id, title, original_language, release_date, popularity, vote_count, vote_average,
+         budget, revenue, runtime, status, genre_names) %>%
+  mutate(budget = replace(budget, budget == 0, NA),
+         revenue = replace(revenue, revenue == 0, NA),
+         runtime = replace(runtime, runtime == 0, NA)) 
+
+# now, we try to create a copy of the dataframe with restored missing values for budget, revenue and runtime columns
+
+summary(tidydata)
+md.pattern(tidydata, rotate.names=TRUE)
+tidydatapred <- complete(mice(tidydata,  method = "mean", m = 1, maxit = 1))
+```
+
+Tidy data after processing, will look like this:
 
 ```{r}
-# Long to Wide, or vice versa?
+head(tidydata)
+```
+
+Tidy data with the restored missing values will look similarly. However, summarized data will differ, which can be seen below:
+
+```{r, echo=FALSE}
+describe(tidydata)
+```
+
+```{r, echo=FALSE}
+describe(tidydatapred)
+```
+
+### Part 3. Problem setting
+
+From the following data, these questions will be investigated:
+
+1. Does a longer movie means more spending: Is runtime associated with the budget? 
+
+2. In which decade audience gave the highest average score to the horror movies?
+
+3. Is there a relationship between budget, revenue and average score?
+
+4. how average score differs across languages of origin?
+
+5. Are Drama-Horrors, on average, are more popular than Thriller-Horrors?
+
+Some of those questions may require additional data editing, which also will be implemented.
+
+### Part 4. Descriptive statistics
+
+```{r}
+
 ```
 
 
 
-### Part 4. Tables
-
-```{r}
-
-```
-
-
-
-### Part 5. Descriptive and Exploratory plots
+### Part 5. Exploratory plots
 
 ```{r}
 
