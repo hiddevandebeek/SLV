@@ -54,10 +54,27 @@ tidydata <- data %>%
 summary(tidydata)
 md.pattern(tidydata, rotate.names=TRUE)
 tidydatapred <- complete(mice(tidydata,  method = "mean", m = 1, maxit = 1))
+mice(tidydata, m = 5)
 ```
 
-Tidy data after processing, will look like this:
+```{r}
+pred <- make.predictorMatrix(tidydata)
+pred <- quickpred(tidydata)
+pred[,c(1,12)] <- 0
+pred[10,] <- 0
 
+meth <- make.method(tidydata)
+meth["runtime"] <- ""
+
+
+imp <- mice(tidydata, maxit = 3, predictorMatrix = pred, method = meth)
+```
+
+
+
+
+
+Tidy data after processing, will look like this:
 ```{r}
 head(tidydata)
 ```
