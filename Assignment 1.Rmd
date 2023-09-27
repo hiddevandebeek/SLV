@@ -21,83 +21,85 @@ library(corrplot)
 ### Part 1. Introduction
 
 ```{r, include=FALSE}
-data <- read.csv("heart_attack_prediction_dataset.csv")
+data <- read.csv("Clean Data_pakwheels.csv")
 data %>% head
 ```
+The dataset under consideration provides a comprehensive look at car listings available on a sales platform. Comprising various makes, models, and years, the dataset serves as a rich source for understanding trends and patterns in the car market. The data contains 14 attributes, each contributing a unique aspect to the information. The dataset can serve multiple analytical objectives. Whether the goal is to understand market trends, buyer preferences, or pricing strategies, the diverse set of attributes allows for a broad range of queries and visualizations.  
 
-The dataset focuses on the prediction of heart attacks and consists of various features like age, sex, cholesterol levels, and types of chest pain, among others. These features serve as indicators for heart attack risks, making this dataset valuable for medical research and predictive modeling.
-
-This assignment is structured as follows: In the second part, we will tidy and summarize our data, making it possible to further process it. Dataset contains a lot of missing values, and, in part 2 we will also try to implement techniques to try to restore needed missing data. In part 3, we identify several questions that can be investigated given the data. In part 4, we calculate relevant descriptive statistics to try to answer them. In part 5, we provide graphs, which visualize our conclusions. Each part is accompanied with a discussion explaining what was done and how it helps to find answers for specified questions.
+This assignment is structured as follows: In the second part, we will tidy and summarize our data, making it possible to further process it. In part 3, we take a first look at some initial descriptive statistics and visualizations. This will give us an insight into interesting questions. In part 4, we provide graphs, which visualize our conclusions. Each part is accompanied with a discussion explaining what was done and how it helps to find answers for specified questions.
 
 ### Part 2. Data wrangling
 ```{r, include=FALSE}
 str(data)
 ```
+work along further
 
-```{r, include=FALSE}
-heart_data <- data %>%
-  separate("Blood.Pressure", into = c("Systolic_BP", "Diastolic_BP"), sep = "/") %>%
-  mutate(
-    Systolic_BP = as.integer(Systolic_BP),
-    Diastolic_BP = as.integer(Diastolic_BP)
-  )
+
+
+### Part 3. Descriptive statistics
+```{r}
+ggplot(data, aes(x = `Company.Name`)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("Frequency of Car Companies")
+```
+```{r}
+ggplot(data, aes(x = Price)) +
+  geom_histogram(binwidth = 50000, fill = "blue", alpha = 0.7) +
+  ggtitle("Histogram of Car Prices")
+```
+```{r}
+ggplot(data, aes(x = Mileage, y = Price)) +
+  geom_point() +
+  ggtitle("Scatter Plot of Mileage vs Price")
+```
+```{r}
+ggplot(data, aes(x = as.factor(`Model.Year`), y = Price)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("Box Plot of Model Year vs Price")
 ```
 
 
-
-### Part 3. Problem setting
-Make hypotheses
-
-
-1. Is Cholesterol different for males and females?
-2. What is the Systolic and Diastolic Bloodpressure in heart attack risk groups?
-3. Is the relation between Cholesterol and Age different for males and females?
-
-
---> come up with these kinds of questions
-
-
-### Part 4. Descriptive statistics
+Only looking at Honda, Suzuki and Toyota and their top performing model
 ```{r}
-is_numeric_or_integer <- function(x) {
-  return(is.numeric(x) || is.integer(x))
-}
+filtered_df <- data %>% filter(`Company.Name` %in% c("Honda", "Suzuki", "Toyota"))
 
-numeric_integer_data <- heart_data %>%
-  select_if(is_numeric_or_integer)
+model_counts <- filtered_df %>%
+  group_by(`Company.Name`, `Model.Name`) %>%
+  summarise(count = n()) %>%
+  arrange(`Company.Name`, desc(count))
 
-# Calculate the correlation matrix
-cor_matrix <- cor(numeric_integer_data, use = "complete.obs")  # 'complete.obs' ignores NA values
+top_models <- model_counts %>%
+  group_by(`Company.Name`) %>%
+  slice_head(n = 3)
 
-# Create the correlation plot
-corrplot(cor_matrix, method = "circle")
-```
-
-
-```{r}
-
+final_filtered_df <- filtered_df %>%
+  semi_join(top_models, by = c("Company.Name", "Model.Name"))
 ```
 
 
 
 ### Part 5. Exploratory plots
+```{r}
+ggplot(filtered_df, aes(x = Mileage, y = Price, color = Company.Name)) +
+  geom_point() +
+  ggtitle("Scatter Plot of Mileage vs Price")
 
-```{r}
-data %>% ggplot(aes(x = Age, y = Heart.Attack.Risk)) + geom_point() +
-  geom_smooth(method = "glm", 
-    method.args = list(family = "binomial"), 
-    se = FALSE) + xlim(-1, 100) + theme_minimal()
+ggplot(final_filtered_df, aes(x = Mileage, y = Price, color = Company.Name)) +
+  geom_point() +
+  ggtitle("Scatter Plot of Mileage vs Price")
 ```
+ 
+Example Final plot
 ```{r}
-data %$% table(Hemisphere, Heart.Attack.Risk) %>% prop.table(margin = 1) %>% round(digits = 2)
-data %$% table(Diet, Heart.Attack.Risk) %>% prop.table(margin = 1) %>% round(digits = 2)
-data %$% table(Sex, Heart.Attack.Risk) %>% prop.table(margin = 1) %>% round(digits = 2)
-```
-```{r}
-data %>% 
-  ggplot(aes(x = Age)) + 
-  geom_histogram(bins = 30) + 
-  facet_wrap(~Smoking) + theme_clean()
+# Create a scatter plot for Mileage vs Price, colored by Model Name, and facetted by Company Name
+ggplot(final_filtered_df, aes(x = Price, y = Mileage, color = `Model.Name`)) +
+  geom_smooth(method = "lm", se = T) +  # Linear regression lines
+  ggtitle("Scatter Plot of Mileage vs Price for Top 3 Models of Honda, Suzuki, and Toyota") +
+  labs(color = "Model Name") +
+  facet_wrap(~ `Company.Name`, scales = "free") +
+  theme_minimal()
 ```
 
 
