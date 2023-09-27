@@ -361,14 +361,11 @@ display: none;
 <h1>Exploratory Data Analysis</h1>
 <div id="part-1.-introduction" class="section level3">
 <h3>Part 1. Introduction</h3>
-<p>Horror movies dataset allows to explore the evolution of horror
-movies starting from the early 1950s. Originally, data set <a href="https://www.kaggle.com/datasets/sujaykapadnis/horror-movies-dataset">was
-extracted</a> from The Movie Database via the tmdb API using R httr.
-There are 32540 movie records in this dataset. From variables of
-interest for each horror we know unique id, title, language of origin,
-release date, popularity, average rating budget, revenue, runtime,
-status and genres. There are other variables as well such as tagline,
-which will not be used in the further analysis.</p>
+<p>The dataset focuses on the prediction of heart attacks and consists
+of various features like age, sex, cholesterol levels, and types of
+chest pain, among others. These features serve as indicators for heart
+attack risks, making this dataset valuable for medical research and
+predictive modeling.</p>
 <p>This assignment is structured as follows: In the second part, we will
 tidy and summarize our data, making it possible to further process it.
 Dataset contains a lot of missing values, and, in part 2 we will also
@@ -382,173 +379,59 @@ was done and how it helps to find answers for specified questions.</p>
 <div id="part-2.-data-wrangling" class="section level3">
 <h3>Part 2. Data wrangling</h3>
 <p>Original data format:</p>
-<pre><code>##        id     original_title              title original_language
-## 1  760161 Orphan: First Kill Orphan: First Kill                en
-## 2  760741              Beast              Beast                en
-## 3  882598              Smile              Smile                en
-## 4  756999    The Black Phone    The Black Phone                en
-## 5  772450         Presencias          Presences                es
-## 6 1014226             Sonríe             Sonríe                es
-##                                                                                                                                                                                                                                                                                                                                                                                 overview
-## 1                                                                                            After escaping from an Estonian psychiatric facility, Leena Klammer travels to America by impersonating Esther, the missing daughter of a wealthy family. But when her mask starts to slip, she is put against a mother who will protect her family from the murderous “child” at any cost.
-## 2                                                                                                                                                                   A recently widowed man and his two teenage daughters travel to a game reserve in South Africa. However, their journey of healing soon turns into a fight for survival when a bloodthirsty lion starts to stalk them.
-## 3                                                                        After witnessing a bizarre, traumatic incident involving a patient, Dr. Rose Cotter starts experiencing frightening occurrences that she can&#39;t explain. As an overwhelming terror begins taking over her life, Rose must confront her troubling past in order to survive and escape her horrifying new reality.
-## 4 Finney Blake, a shy but clever 13-year-old boy, is abducted by a sadistic killer and trapped in a soundproof basement where screaming is of little use. When a disconnected phone on the wall begins to ring, Finney discovers that he can hear the voices of the killer’s previous victims. And they are dead set on making sure that what happened to them doesn’t happen to Finney.
-## 5                                                                                                                                                                                                                                                                             A man who loses his wife and goes to seclude himself in a cabin in the woods, where strange things happen.
-## 6                                                                                                                                                                                                                                                                                                                                                                                       
-##                                            tagline release_date
-## 1 There&#39;s always been something wrong with Esther.   2022-07-27
-## 2                                Fight for family.   2022-08-11
-## 3                  Once you see it, it’s too late.   2022-09-23
-## 4                         Never talk to strangers.   2022-06-22
-## 5                                                    2022-09-07
-## 6                                                    2022-08-18
-##                        poster_path popularity vote_count vote_average   budget
-## 1 /pHkKbIRoCe7zIFvqan9LFSaQAde.jpg   5088.584        902          6.9        0
-## 2 /xIGr7UHsKf0URWmyyd5qFMAq4d8.jpg   2172.338        584          7.1        0
-## 3 /hiaeZKzwsk4y4atFhmncO5KRxeT.jpg   1863.628        114          6.8 17000000
-## 4 /lr11mCT85T1JanlgjMuhs9nMht4.jpg   1071.398       2736          7.9 18800000
-## 5 /dgDT3uol3mdvwEg0jt1ble3l9hw.jpg   1020.995         83          7.0        0
-## 6 /wHowKf77gNZbVo9yu5ggiNBFCdJ.jpg    939.712          1          1.0        0
-##     revenue runtime   status adult                    backdrop_path
-## 1   9572765      99 Released FALSE /5GA3vV1aWWHTSDO5eno8V5zDo8r.jpg
-## 2  56000000      93 Released FALSE /2k9tBql5GYH328Krj66tDT9LtFZ.jpg
-## 3  45000000     115 Released FALSE /mVNPfpydornVe4H4UCIk7WevWjf.jpg
-## 4 161000000     103 Released FALSE /AfvIjhDu9p64jKcmohS4hsPG95Q.jpg
-## 5         0       0 Released FALSE /ojfzhdwRemcDt1I6pao6vVLw9AA.jpg
-## 6         0       0 Released FALSE                             &lt;NA&gt;
-##                 genre_names collection   collection_name
-## 1          Horror, Thriller     760193 Orphan Collection
-## 2  Adventure, Drama, Horror         NA              &lt;NA&gt;
-## 3 Horror, Mystery, Thriller         NA              &lt;NA&gt;
-## 4          Horror, Thriller         NA              &lt;NA&gt;
-## 5                    Horror         NA              &lt;NA&gt;
-## 6          Horror, Thriller         NA              &lt;NA&gt;</code></pre>
-<p>From the overview, it can be seen that several edits are needed.
-Firstly, some columns have to be dropped. Secondly, missing data for
-budget, revenue and runtime columns have to be specified as NA. Thirdly,
-the format of each column has to be specified more precisely.</p>
-<p>Tidy data after processing, will look like this:</p>
-<pre class="r"><code>head(tidydata)</code></pre>
-<pre><code>##        id              title original_language release_date popularity
-## 1  760161 Orphan: First Kill                en   2022-07-27   5088.584
-## 2  760741              Beast                en   2022-08-11   2172.338
-## 3  882598              Smile                en   2022-09-23   1863.628
-## 4  756999    The Black Phone                en   2022-06-22   1071.398
-## 5  772450          Presences                es   2022-09-07   1020.995
-## 6 1014226             Sonríe                es   2022-08-18    939.712
-##   vote_count vote_average   budget   revenue runtime   status
-## 1        902          6.9       NA   9572765      99 Released
-## 2        584          7.1       NA  56000000      93 Released
-## 3        114          6.8 17000000  45000000     115 Released
-## 4       2736          7.9 18800000 161000000     103 Released
-## 5         83          7.0       NA        NA      NA Released
-## 6          1          1.0       NA        NA      NA Released
-##                 genre_names
-## 1          Horror, Thriller
-## 2  Adventure, Drama, Horror
-## 3 Horror, Mystery, Thriller
-## 4          Horror, Thriller
-## 5                    Horror
-## 6          Horror, Thriller</code></pre>
-<p>Tidy data with the restored missing values will look similarly.
-However, summarized data will differ, which can be seen below:</p>
-<pre><code>##                    vars     n        mean          sd     median     trimmed
-## id                    1 32540   445910.83   305744.67  426521.00   434399.81
-## title*                2 32540    14866.00     8521.13   14916.50    14882.46
-## original_language*    3 32540       27.49       19.28      19.00       22.23
-## release_date*         4 32540     6883.94     3054.09    7616.00     7127.94
-## popularity            5 32540        4.01       37.51       0.84        1.44
-## vote_count            6 32540       62.69      420.89       2.00        6.31
-## vote_average          7 32540        3.34        2.88       4.00        3.17
-## budget                8  5201  3398065.58 10928200.95   50000.00   911459.41
-## revenue               9  1576 27868501.68 59687844.90 3662214.00 13510088.53
-## runtime              10 29872       67.69       38.15      83.00       69.21
-## status*              11 32540        3.99        0.15       4.00        4.00
-## genre_names*         12 32540      634.39      162.50     723.00      667.97
-##                           mad min          max        range   skew kurtosis
-## id                  415706.96  17   1033095.00   1033078.00   0.19    -1.16
-## title*               11012.01   1     29563.00     29562.00  -0.01    -1.21
-## original_language*       0.00   1        97.00        96.00   2.32     4.39
-## release_date*         3335.85   1     10999.00     10998.00  -0.56    -0.87
-## popularity               0.36   0      5088.58      5088.58  89.78 10970.61
-## vote_count               2.97   0     16900.00     16900.00  17.00   425.31
-## vote_average             3.71   0        10.00        10.00   0.13    -1.18
-## budget               74115.17   1 200000000.00 199999999.00   7.28    80.68
-## revenue            5422875.63   1 701842551.00 701842550.00   4.33    26.97
-## runtime                 20.76   1       683.00       682.00   0.00     5.20
-## status*                  0.00   1         4.00         3.00 -18.97   373.46
-## genre_names*            56.34   1       772.00       771.00  -1.74     2.36
-##                            se
-## id                    1694.92
-## title*                  47.24
-## original_language*       0.11
-## release_date*           16.93
-## popularity               0.21
-## vote_count               2.33
-## vote_average             0.02
-## budget              151532.31
-## revenue            1503515.09
-## runtime                  0.22
-## status*                  0.00
-## genre_names*             0.90</code></pre>
-<pre><code>##                    vars     n        mean          sd      median     trimmed
-## id                    1 32540   445910.83   305744.67   426521.00   434399.81
-## title*                2 32540    14866.00     8521.13    14916.50    14882.46
-## original_language*    3 32540       27.49       19.28       19.00       22.23
-## release_date*         4 32540     6883.94     3054.09     7616.00     7127.94
-## popularity            5 32540        4.01       37.51        0.84        1.44
-## vote_count            6 32540       62.69      420.89        2.00        6.31
-## vote_average          7 32540        3.34        2.88        4.00        3.17
-## budget                8 32540  3398065.58  4368659.97  3398065.58  3319247.32
-## revenue               9 32540 27868501.68 13131794.46 27868501.68 27868501.68
-## runtime              10 32540       67.69       36.55       80.00       69.35
-## status*              11 32540        3.99        0.15        4.00        4.00
-## genre_names*         12 32540      634.39      162.50      723.00      667.97
-##                          mad min          max        range   skew kurtosis
-## id                 415706.96  17   1033095.00   1033078.00   0.19    -1.16
-## title*              11012.01   1     29563.00     29562.00  -0.01    -1.21
-## original_language*      0.00   1        97.00        96.00   2.32     4.39
-## release_date*        3335.85   1     10999.00     10998.00  -0.56    -0.87
-## popularity              0.36   0      5088.58      5088.58  89.78 10970.61
-## vote_count              2.97   0     16900.00     16900.00  17.00   425.31
-## vote_average            3.71   0        10.00        10.00   0.13    -1.18
-## budget                  0.00   1 200000000.00 199999999.00  18.21   520.72
-## revenue                 0.00   1 701842551.00 701842550.00  19.69   616.56
-## runtime                20.76   1       683.00       682.00   0.00     5.93
-## status*                 0.00   1         4.00         3.00 -18.97   373.46
-## genre_names*           56.34   1       772.00       771.00  -1.74     2.36
-##                          se
-## id                  1694.92
-## title*                47.24
-## original_language*     0.11
-## release_date*         16.93
-## popularity             0.21
-## vote_count             2.33
-## vote_average           0.02
-## budget             24218.07
-## revenue            72797.31
-## runtime                0.20
-## status*                0.00
-## genre_names*           0.90</code></pre>
+<pre><code>##   Patient.ID Age    Sex Cholesterol Blood.Pressure Heart.Rate Diabetes
+## 1    BMW7812  67   Male         208         158/88         72        0
+## 2    CZE1114  21   Male         389         165/93         98        1
+## 3    BNI9906  21 Female         324         174/99         72        1
+## 4    JLN3497  84   Male         383        163/100         73        1
+## 5    GFO8847  66   Male         318          91/88         93        1
+## 6    ZOO7941  54 Female         297         172/86         48        1
+##   Family.History Smoking Obesity Alcohol.Consumption Exercise.Hours.Per.Week
+## 1              0       1       0                   0                4.168189
+## 2              1       1       1                   1                1.813242
+## 3              0       0       0                   0                2.078353
+## 4              1       1       0                   1                9.828130
+## 5              1       1       1                   0                5.804299
+## 6              1       1       0                   1                0.625008
+##        Diet Previous.Heart.Problems Medication.Use Stress.Level
+## 1   Average                       0              0            9
+## 2 Unhealthy                       1              0            1
+## 3   Healthy                       1              1            9
+## 4   Average                       1              0            9
+## 5 Unhealthy                       1              0            6
+## 6 Unhealthy                       1              1            2
+##   Sedentary.Hours.Per.Day Income      BMI Triglycerides
+## 1                6.615001 261404 31.25123           286
+## 2                4.963459 285768 27.19497           235
+## 3                9.463426 235282 28.17657           587
+## 4                7.648981 125640 36.46470           378
+## 5                1.514821 160555 21.80914           231
+## 6                7.798752 241339 20.14684           795
+##   Physical.Activity.Days.Per.Week Sleep.Hours.Per.Day   Country     Continent
+## 1                               0                   6 Argentina South America
+## 2                               1                   7    Canada North America
+## 3                               4                   4    France        Europe
+## 4                               3                   4    Canada North America
+## 5                               1                   5  Thailand          Asia
+## 6                               5                  10   Germany        Europe
+##            Hemisphere Heart.Attack.Risk
+## 1 Southern Hemisphere                 0
+## 2 Northern Hemisphere                 0
+## 3 Northern Hemisphere                 0
+## 4 Northern Hemisphere                 0
+## 5 Northern Hemisphere                 0
+## 6 Northern Hemisphere                 1</code></pre>
 </div>
 <div id="part-3.-problem-setting" class="section level3">
 <h3>Part 3. Problem setting</h3>
-<p>From the following data, the following questions will be
-investigated:</p>
 <ol style="list-style-type: decimal">
-<li><p>Does a longer movie means more spending: Is runtime associated
-with the budget?</p></li>
-<li><p>In which decade audience gave the highest average score to the
-horror movies?</p></li>
-<li><p>Is there a relationship between budget, revenue and average
-score?</p></li>
-<li><p>how average score differs across languages of origin?</p></li>
-<li><p>Are Drama-Horrors, on average, are more popular than
-Thriller-Horrors?</p></li>
+<li>Is Cholesterol different for males and females?</li>
+<li>What is the Systolic and Diastolic Bloodpressure in heart attack
+risk groups?</li>
+<li>Is the relation between Cholesterol and Age different for males and
+females?</li>
 </ol>
-<p>Some of those questions may require additional data editing, which
-also will be implemented.</p>
+<p>–&gt; come up with these kinds of questions</p>
 </div>
 <div id="part-4.-descriptive-statistics" class="section level3">
 <h3>Part 4. Descriptive statistics</h3>

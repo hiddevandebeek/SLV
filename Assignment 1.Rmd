@@ -18,92 +18,42 @@ library(mice)
 ### Part 1. Introduction
 
 ```{r, include=FALSE}
-data <- read.csv("horror_movies.csv")
+data <- read.csv("heart_attack_prediction_dataset.csv")
 ```
 
-Horror movies dataset allows to explore the evolution of horror movies starting from the early 1950s. Originally, data set [was extracted](https://www.kaggle.com/datasets/sujaykapadnis/horror-movies-dataset) from The Movie Database via the tmdb API using R httr. There are 32540 movie records in this dataset. From variables of interest for each horror we know unique id, title, language of origin, release date, popularity, average rating budget, revenue, runtime, status and genres. There are other variables as well such as tagline, which will not be used in the further analysis.
+The dataset focuses on the prediction of heart attacks and consists of various features like age, sex, cholesterol levels, and types of chest pain, among others. These features serve as indicators for heart attack risks, making this dataset valuable for medical research and predictive modeling.
 
 This assignment is structured as follows: In the second part, we will tidy and summarize our data, making it possible to further process it. Dataset contains a lot of missing values, and, in part 2 we will also try to implement techniques to try to restore needed missing data. In part 3, we identify several questions that can be investigated given the data. In part 4, we calculate relevant descriptive statistics to try to answer them. In part 5, we provide graphs, which visualize our conclusions. Each part is accompanied with a discussion explaining what was done and how it helps to find answers for specified questions.
 
 ### Part 2. Data wrangling
 
 Original data format:
-
 ```{r,echo=FALSE}
 head(data)
 ```
-
 ```{r, include=FALSE}
 str(data)
 ```
 
-From the overview, it can be seen that several edits are needed. Firstly, some columns have to be dropped. Secondly, missing data for budget, revenue and runtime columns have to be specified as NA. Thirdly, the format of each column has to be specified more precisely.
-
 ```{r, include=FALSE}
-# step 1 & 2.
-
-tidydata <- data %>%
-  select(id, title, original_language, release_date, popularity, vote_count, vote_average,
-         budget, revenue, runtime, status, genre_names) %>%
-  mutate(budget = replace(budget, budget == 0, NA),
-         revenue = replace(revenue, revenue == 0, NA),
-         runtime = replace(runtime, runtime == 0, NA)) 
-
-# now, we try to create a copy of the dataframe with restored missing values for budget, revenue and runtime columns
-
-summary(tidydata)
-md.pattern(tidydata, rotate.names=TRUE)
-tidydatapred <- complete(mice(tidydata,  method = "mean", m = 1, maxit = 1))
-mice(tidydata, m = 5)
-```
-
-```{r}
-pred <- make.predictorMatrix(tidydata)
-pred <- quickpred(tidydata)
-pred[,c(1,12)] <- 0
-pred[10,] <- 0
-
-meth <- make.method(tidydata)
-meth["runtime"] <- ""
-
-
-imp <- mice(tidydata, maxit = 3, predictorMatrix = pred, method = meth)
+heart_data <- data %>%
+  separate("Blood.Pressure", into = c("Systolic_BP", "Diastolic_BP"), sep = "/") %>%
+  mutate(
+    Systolic_BP = as.integer(Systolic_BP),
+    Diastolic_BP = as.integer(Diastolic_BP)
+  )
 ```
 
 
-
-
-
-Tidy data after processing, will look like this:
-```{r}
-head(tidydata)
-```
-
-Tidy data with the restored missing values will look similarly. However, summarized data will differ, which can be seen below:
-
-```{r, echo=FALSE}
-describe(tidydata)
-```
-
-```{r, echo=FALSE}
-describe(tidydatapred)
-```
 
 ### Part 3. Problem setting
+1. Is Cholesterol different for males and females?
+2. What is the Systolic and Diastolic Bloodpressure in heart attack risk groups?
+3. Is the relation between Cholesterol and Age different for males and females?
 
-From the following data, these questions will be investigated:
 
-1. Does a longer movie means more spending: Is runtime associated with the budget? 
+--> come up with these kinds of questions
 
-2. In which decade audience gave the highest average score to the horror movies?
-
-3. Is there a relationship between budget, revenue and average score?
-
-4. how average score differs across languages of origin?
-
-5. Are Drama-Horrors, on average, are more popular than Thriller-Horrors?
-
-Some of those questions may require additional data editing, which also will be implemented.
 
 ### Part 4. Descriptive statistics
 
