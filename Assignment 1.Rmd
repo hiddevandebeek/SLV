@@ -13,12 +13,16 @@ library(tidyverse)
 library(magrittr)
 library(psych)
 library(mice)
+library(ggplot2)
+library(ggthemes)
+library(corrplot)
 ```
 
 ### Part 1. Introduction
 
 ```{r, include=FALSE}
 data <- read.csv("heart_attack_prediction_dataset.csv")
+data %>% head
 ```
 
 The dataset focuses on the prediction of heart attacks and consists of various features like age, sex, cholesterol levels, and types of chest pain, among others. These features serve as indicators for heart attack risks, making this dataset valuable for medical research and predictive modeling.
@@ -26,11 +30,6 @@ The dataset focuses on the prediction of heart attacks and consists of various f
 This assignment is structured as follows: In the second part, we will tidy and summarize our data, making it possible to further process it. Dataset contains a lot of missing values, and, in part 2 we will also try to implement techniques to try to restore needed missing data. In part 3, we identify several questions that can be investigated given the data. In part 4, we calculate relevant descriptive statistics to try to answer them. In part 5, we provide graphs, which visualize our conclusions. Each part is accompanied with a discussion explaining what was done and how it helps to find answers for specified questions.
 
 ### Part 2. Data wrangling
-
-Original data format:
-```{r,echo=FALSE}
-head(data)
-```
 ```{r, include=FALSE}
 str(data)
 ```
@@ -47,6 +46,9 @@ heart_data <- data %>%
 
 
 ### Part 3. Problem setting
+Make hypotheses
+
+
 1. Is Cholesterol different for males and females?
 2. What is the Systolic and Diastolic Bloodpressure in heart attack risk groups?
 3. Is the relation between Cholesterol and Age different for males and females?
@@ -56,6 +58,21 @@ heart_data <- data %>%
 
 
 ### Part 4. Descriptive statistics
+```{r}
+is_numeric_or_integer <- function(x) {
+  return(is.numeric(x) || is.integer(x))
+}
+
+numeric_integer_data <- heart_data %>%
+  select_if(is_numeric_or_integer)
+
+# Calculate the correlation matrix
+cor_matrix <- cor(numeric_integer_data, use = "complete.obs")  # 'complete.obs' ignores NA values
+
+# Create the correlation plot
+corrplot(cor_matrix, method = "circle")
+```
+
 
 ```{r}
 
@@ -66,8 +83,23 @@ heart_data <- data %>%
 ### Part 5. Exploratory plots
 
 ```{r}
-
+data %>% ggplot(aes(x = Age, y = Heart.Attack.Risk)) + geom_point() +
+  geom_smooth(method = "glm", 
+    method.args = list(family = "binomial"), 
+    se = FALSE) + xlim(-1, 100) + theme_minimal()
 ```
+```{r}
+data %$% table(Hemisphere, Heart.Attack.Risk) %>% prop.table(margin = 1) %>% round(digits = 2)
+data %$% table(Diet, Heart.Attack.Risk) %>% prop.table(margin = 1) %>% round(digits = 2)
+data %$% table(Sex, Heart.Attack.Risk) %>% prop.table(margin = 1) %>% round(digits = 2)
+```
+```{r}
+data %>% 
+  ggplot(aes(x = Age)) + 
+  geom_histogram(bins = 30) + 
+  facet_wrap(~Smoking) + theme_clean()
+```
+
 
 
 
