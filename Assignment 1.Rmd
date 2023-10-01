@@ -32,7 +32,84 @@ This assignment is structured as follows: In the second part, we will tidy and s
 ```{r, include=FALSE}
 str(data)
 ```
-work along further
+### Part 2. Data wrangling
+## Data Type
+```{r, include=FALSE}
+str(data)
+```
+all columns were imported as data types that we expected but we can change the registration status to factor type.
+
+```{r}
+#Assessing missing data
+
+md.pattern(data)
+```
+The md.pattern shows that there is not any missing values in this dataset.
+
+```{r}
+# Create a new variable "Age" based on the difference between Model.Year and the current year
+current_year <- as.integer(format(Sys.Date(), "%Y"))
+data <- data %>%
+  mutate(Age = current_year - Model.Year)
+```
+
+```{r}
+head(data)
+```
+## Group and summarize data:
+calculate the average price of cars by Company.Name.
+```{r}
+#Group and Summarize Data:
+
+summarized_data <- data %>%
+  group_by(Company.Name) %>%
+  summarise(Avg_Price = mean(Price)) %>%
+  arrange(desc(Avg_Price))  # Sort by Avg_Price in descending order
+
+print(summarized_data)
+```
+```{r}
+
+```
+
+##Data Aggregation:
+
+Aggregate data to calculate summary statistics for multiple variables simultaneously:
+calculate the mean Mileage and Engine.Capacity by Company.Name.
+```{r}
+aggregated_data <- data %>%
+  group_by(Company.Name) %>%
+  summarise(
+    Avg_Mileage = mean(Mileage),
+    Avg_Engine_Capacity = mean(Engine.Capacity)
+  )
+print(aggregated_data)
+```
+
+### Part 3. Descriptive statistics
+We group the data by "Company.Name."
+then calculate various summary statistics for the "Price" column within each company, including the mean, median, minimum, maximum, and total count of cars.
+and arrange the results in descending order of average price.
+
+```{r}
+
+
+
+result <- data %>%
+  group_by(Company.Name) %>%
+  summarise(
+    Avg_Price = mean(Price, na.rm = TRUE),
+    Median_Price = median(Price, na.rm = TRUE),
+    Min_Price = min(Price, na.rm = TRUE),
+    Max_Price = max(Price, na.rm = TRUE),
+    Total_Cars = n()
+  ) %>%
+  arrange(desc(Avg_Price))
+
+# Print the resulting summary
+print(result)
+
+```
 
 
 
