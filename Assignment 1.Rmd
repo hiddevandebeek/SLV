@@ -24,26 +24,27 @@ library(corrplot)
 data <- read.csv("Clean Data_pakwheels.csv")
 data %>% head
 ```
+
 The dataset under consideration provides a comprehensive look at car listings available on a sales platform. Comprising various makes, models, and years, the dataset serves as a rich source for understanding trends and patterns in the car market. The data contains 14 attributes, each contributing a unique aspect to the information. The dataset can serve multiple analytical objectives. Whether the goal is to understand market trends, buyer preferences, or pricing strategies, the diverse set of attributes allows for a broad range of queries and visualizations.  
 
 This assignment is structured as follows: In the second part, we will tidy and summarize our data, making it possible to further process it. In part 3, we take a first look at some initial descriptive statistics and visualizations. This will give us an insight into interesting questions. In part 4, we provide graphs, which visualize our conclusions. Each part is accompanied with a discussion explaining what was done and how it helps to find answers for specified questions.
 
 ### Part 2. Data wrangling
+
+#### Data Type
+
 ```{r, include=FALSE}
 str(data)
 ```
-### Part 2. Data wrangling
-## Data Type
-```{r, include=FALSE}
-str(data)
-```
+
 all columns were imported as data types that we expected but we can change the registration status to factor type.
 
-```{r}
+```{r, include=FALSE}
 #Assessing missing data
 
 md.pattern(data)
 ```
+
 The md.pattern shows that there is not any missing values in this dataset.
 
 ```{r}
@@ -56,11 +57,12 @@ data <- data %>%
 ```{r}
 head(data)
 ```
-### Group and summarize data:
-calculate the average price of cars by Company.Name.
-```{r}
-###Group and Summarize Data:
 
+#### Group and summarize data:
+
+calculate the average price of cars by Company.Name.
+
+```{r}
 summarized_data <- data %>%
   group_by(Company.Name) %>%
   summarise(Avg_Price = mean(Price)) %>%
@@ -68,14 +70,10 @@ summarized_data <- data %>%
 
 print(summarized_data)
 ```
-```{r}
 
-```
+#### Data Aggregation:
 
-###Data Aggregation:
-
-Aggregate data to calculate summary statistics for multiple variables simultaneously:
-calculate the mean Mileage and Engine.Capacity by Company.Name.
+Aggregate data to calculate summary statistics for multiple variables simultaneously: calculate the mean Mileage and Engine.Capacity by Company.Name.
 
 ```{r}
 aggregated_data <- data %>%
@@ -88,15 +86,10 @@ print(aggregated_data)
 ```
 
 ### Part 3. Descriptive statistics
-We group the data by "Company.Name."
-then calculate various summary statistics for the "Price" column within each company, including the mean, median, minimum, maximum, and total count of cars.
-and arrange the results in descending order of average price.
 
+We group the data by "Company.Name.", then calculate various summary statistics for the "Price" column within each company, including the mean, median, minimum, maximum, and total count of cars. Then, we arrange the results in descending order of average price.
 
 ```{r}
-
-
-
 result <- data %>%
   group_by(Company.Name) %>%
   summarise(
@@ -110,12 +103,10 @@ result <- data %>%
 
 # Print the resulting summary
 print(result)
-
 ```
 
+### Part 4. Exploratory plots
 
-
-### Part 3. Descriptive statistics
 ```{r}
 ggplot(data, aes(x = `Company.Name`)) +
   geom_bar() +
@@ -139,8 +130,8 @@ ggplot(data, aes(x = as.factor(`Model.Year`), y = Price)) +
   ggtitle("Box Plot of Model Year vs Price")
 ```
 
-
 Only looking at Honda, Suzuki and Toyota and their top performing model
+
 ```{r}
 filtered_df <- data %>% filter(`Company.Name` %in% c("Honda", "Suzuki", "Toyota"))
 
@@ -159,7 +150,6 @@ final_filtered_df <- filtered_df %>%
 
 
 
-### Part 5. Exploratory plots
 ```{r}
 ggplot(filtered_df, aes(x = Mileage, y = Price, color = Company.Name)) +
   geom_point() +
@@ -171,6 +161,7 @@ ggplot(final_filtered_df, aes(x = Mileage, y = Price, color = Company.Name)) +
 ```
  
 Example Final plot
+
 ```{r}
 # Create a scatter plot for Mileage vs Price, colored by Model Name, and facetted by Company Name
 ggplot(final_filtered_df, aes(x = Price, y = Mileage, color = `Model.Name`)) +
@@ -181,9 +172,6 @@ ggplot(final_filtered_df, aes(x = Price, y = Mileage, color = `Model.Name`)) +
   theme_minimal()
 ```
 
-
-
-
-### Explanation
+### Part 5. Explanation
 
 explain what you did and why (maximum 5 paragraphs total) if applicable, note findings such as missingness, outliers or unlikely values or group differences, etc.
