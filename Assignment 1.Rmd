@@ -111,23 +111,44 @@ print(result)
 ggplot(data, aes(x = `Company.Name`)) +
   geom_bar() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggtitle("Frequency of Car Companies")
+  ggtitle("Frequency of Car Companies") +
+  xlab("Car Company") +
+  ylab("Frequency")
 ```
 ```{r}
 ggplot(data, aes(x = Price)) +
-  geom_histogram(binwidth = 50000, fill = "blue", alpha = 0.7) +
-  ggtitle("Histogram of Car Prices")
+  geom_histogram(binwidth = 250000, fill = "skyblue", alpha = 0.7) + 
+  ggtitle("Histogram of Car Prices") +
+  xlab("Price") +
+  ylab("Frequency") +
+  scale_x_continuous(
+    breaks = seq(0, 10000000, by = 500000),  
+    limits = c(0, 10000000)  
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
 ```
 ```{r}
-ggplot(data, aes(x = Mileage, y = Price)) +
+ggplot(data, aes(x = Mileage, y = Price, color = as.factor(Model.Year))) +
   geom_point() +
-  ggtitle("Scatter Plot of Mileage vs Price")
+  ggtitle("Scatter Plot of Mileage vs Price (Pakistani Rupee)") +
+  xlab("Mileage") +
+  ylab("Price (Pakistani Rupee)") +
+  scale_y_continuous(labels = scales::comma_format()) +
+  theme(axis.text.y = element_text(size = 10)) +
+  scale_color_discrete(name = "Years") +
+  labs(color = "Years")
 ```
 ```{r}
-ggplot(data, aes(x = as.factor(`Model.Year`), y = Price)) +
+ggplot(data, aes(x = as.factor(Model.Year), y = Price, fill = as.factor(Model.Year))) +
   geom_boxplot() +
+  ggtitle("Box Plot of Model Year vs Price (Pakistani Rupee)") +
+  xlab("Years") +
+  ylab("Price (Pakistani Rupee)") +
+  scale_y_continuous(labels = scales::comma_format(), breaks = seq(0, 80000000, by = 4000000)) +
+  scale_fill_discrete(name = "Years") +
+  labs(fill = "Years") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggtitle("Box Plot of Model Year vs Price")
+  theme(legend.position = "none")
 ```
 
 Only looking at Honda, Suzuki and Toyota and their top performing model
@@ -153,23 +174,28 @@ final_filtered_df <- filtered_df %>%
 ```{r}
 ggplot(filtered_df, aes(x = Mileage, y = Price, color = Company.Name)) +
   geom_point() +
-  ggtitle("Scatter Plot of Mileage vs Price")
+  ggtitle("Scatter Plot of Mileage vs Price (Pakistani Rupee)") +
+  scale_y_continuous(labels = scales::comma_format(), breaks = seq(0, 80000000, by = 4000000))
 
 ggplot(final_filtered_df, aes(x = Mileage, y = Price, color = Company.Name)) +
   geom_point() +
-  ggtitle("Scatter Plot of Mileage vs Price")
+  ggtitle("Scatter Plot of Mileage vs Price (Pakistani Rupee)") +
+  scale_y_continuous(labels = scales::comma_format(), breaks = seq(0, 8000000, by = 400000))
 ```
  
 Example Final plot
 
 ```{r}
-# Create a scatter plot for Mileage vs Price, colored by Model Name, and facetted by Company Name
 ggplot(final_filtered_df, aes(x = Price, y = Mileage, color = `Model.Name`)) +
-  geom_smooth(method = "lm", se = T) +  # Linear regression lines
+  geom_smooth(method = "lm", se = TRUE) +  # Linear regression lines
   ggtitle("Scatter Plot of Mileage vs Price for Top 3 Models of Honda, Suzuki, and Toyota") +
   labs(color = "Model Name") +
   facet_wrap(~ `Company.Name`, scales = "free") +
-  theme_minimal()
+  theme_minimal() +
+  scale_x_continuous(labels = scales::comma_format(scale = 1e-6)) + 
+  scale_y_continuous(labels = scales::comma_format()) +
+  xlab("Price (in millions of Pakistani Rupee)") +  
+  ylab("Mileage")  
 ```
 
 ### Part 5. Explanation
