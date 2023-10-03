@@ -41,7 +41,6 @@ all columns were imported as data types that we expected but we can change the r
 
 ```{r, include=FALSE}
 #Assessing missing data
-
 md.pattern(data)
 ```
 
@@ -71,6 +70,8 @@ summarized_data <- data %>%
 print(summarized_data)
 ```
 
+As it can be seen, Porshe has the highest average price, while Adam has the lowest.
+
 #### Data Aggregation:
 
 Aggregate data to calculate summary statistics for multiple variables simultaneously: calculate the mean Mileage and Engine.Capacity by Company.Name.
@@ -81,9 +82,12 @@ aggregated_data <- data %>%
   summarise(
     Avg_Mileage = mean(Mileage),
     Avg_Engine_Capacity = mean(Engine.Capacity)
-  )
+  ) %>%
+  arrange(desc(Avg_Engine_Capacity)) 
 print(aggregated_data)
 ```
+
+In terms of average engine capacity, Hummer, Range and Jeep take first three positions, respectively.
 
 ### Part 3. Descriptive statistics
 
@@ -105,6 +109,8 @@ result <- data %>%
 print(result)
 ```
 
+Among the most expensive models are the companies which do not have many cars on the market in total. As expected, Porshe, Hummer, Range, Jaguar and Lexus are presented in top-5. Later on it the list, they are accompanied by Audi, BMW and Mercedes. An interesting observation is that, the more cars are presented, the lower the median price is.
+
 ### Part 4. Exploratory plots
 
 ```{r}
@@ -115,6 +121,9 @@ ggplot(data, aes(x = `Company.Name`)) +
   xlab("Car Company") +
   ylab("Frequency")
 ```
+
+As it can be see on the graph, the market is heavily skewed in favor of Asian car producers, mostly related to Japan (Honda, Subaru, Suzuki, Toyota, Daihatsu), which makes total sense, taking market location into account. Car producers traditional for Europe and North America are barely presented on the market, mostly - in the upper segment, where the companies such as Mercedes can be seen.
+
 ```{r}
 ggplot(data, aes(x = Price)) +
   geom_histogram(binwidth = 250000, fill = "skyblue", alpha = 0.7) + 
@@ -127,6 +136,9 @@ ggplot(data, aes(x = Price)) +
   ) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))  
 ```
+
+As it can be seen, Car pricing presents a normal distribution skewed to the right. Most of the cars can be seen in an average price segment, with cheap cars having almost similar price. For the upper segment of the market the citation is directly the opposite, such as the pricing can vary a lot.  
+
 ```{r}
 ggplot(data, aes(x = Mileage, y = Price, color = as.factor(Model.Year))) +
   geom_point() +
@@ -138,6 +150,9 @@ ggplot(data, aes(x = Mileage, y = Price, color = as.factor(Model.Year))) +
   scale_color_discrete(name = "Years") +
   labs(color = "Years")
 ```
+
+As it was expected, the relationship between average price, model year and mileage can be seen. Clearly, the smaller the mileage and the newer the model is, the higher the price. Interestingly, there are several cars presented in the dataframe with extremely high (>500000) mileage. It does not seem, however, that they can significantly affect outcomes in case data is used to run the model. 
+
 ```{r}
 ggplot(data, aes(x = as.factor(Model.Year), y = Price, fill = as.factor(Model.Year))) +
   geom_boxplot() +
@@ -151,9 +166,11 @@ ggplot(data, aes(x = as.factor(Model.Year), y = Price, fill = as.factor(Model.Ye
   theme(legend.position = "none")
 ```
 
-Only looking at Honda, Suzuki and Toyota and their top performing model
+Box plot confirms what was said before about the relationship between model year and the price. It is important to mention, however, that since the size of the dataframe is relatively large and pricing does not really tend to have a large variance, we can see a lot of outliers for each year.
 
-```{r}
+Now, lets try only looking at Honda, Suzuki and Toyota and their top performing model
+
+```{r, include=FALSE}
 filtered_df <- data %>% filter(`Company.Name` %in% c("Honda", "Suzuki", "Toyota"))
 
 model_counts <- filtered_df %>%
@@ -168,9 +185,6 @@ top_models <- model_counts %>%
 final_filtered_df <- filtered_df %>%
   semi_join(top_models, by = c("Company.Name", "Model.Name"))
 ```
-
-
-
 ```{r}
 ggplot(filtered_df, aes(x = Mileage, y = Price, color = Company.Name)) +
   geom_point() +
@@ -183,7 +197,9 @@ ggplot(final_filtered_df, aes(x = Mileage, y = Price, color = Company.Name)) +
   scale_y_continuous(labels = scales::comma_format(), breaks = seq(0, 8000000, by = 400000))
 ```
  
-Example Final plot
+On these graphs, we can see 2 different scaling of the same graph for the Mileage vs Price for 3 models. As it can be seen, in a ascending order by the price, they can be placed as: Suzuki, Honda, Toyota.   
+ 
+Finally, lets examine Mileage vs Price for the models which are the most popular ones: Honda, Suzuki, and Toyota.
 
 ```{r}
 ggplot(final_filtered_df, aes(x = Price, y = Mileage, color = `Model.Name`)) +
@@ -198,6 +214,8 @@ ggplot(final_filtered_df, aes(x = Price, y = Mileage, color = `Model.Name`)) +
   ylab("Mileage")  
 ```
 
+The trends seen here are the same in Mileage & Price relationship for all the most popular car models. Intresting thing is, however, some models get older slightly faster than the other ones.
+
 ### Part 5. Explanation
 
-explain what you did and why (maximum 5 paragraphs total) if applicable, note findings such as missingness, outliers or unlikely values or group differences, etc.
+Our Exploratory analysis showed the consistency of the dataframe and its relevance for those who can be interested in the car market analysis. Dataframe has no missing observations, but has quite a lot of outliers, mostly because of its size and a small variance across different grouping factors. We calculated descriptive statistics and built several exploratory plots, describing which information can be explored, using the data. The explanation for each of the graphs is provided below them. Overall, it can be concluded that the data is suitable for a more complex analytic approaches.    
